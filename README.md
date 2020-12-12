@@ -446,12 +446,294 @@ cnpm i redux react-redux @types/react-redux redux-logger redux-promise redux-thu
 - 创建文件 `/src/store/index.tsx`
 
 ```tsx
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, StoreEnhancer, StoreEnhancerStoreCreator, Store } from 'redux'
 import thunk from 'redux-thunk'
+import reducer from './reducers'
+
+let storeEnhancer: StoreEnhancer = applyMiddleware(thunk)
+let storeEnhancerStoreCreator: StoreEnhancerStoreCreator = storeEnhancer(createStore)
+let store: Store = storeEnhancerStoreCreator(reducer)
 
 
-
+export default store
 ```
 
+- 创建 `/src/store/acton-types.tsx`
 
+```jsx
+export const ADD1 = 'ADD1'
+export const ADD2 = 'ADD2'
+```
+
+- 创建 `/src/store/reducers/counter1.tsx`
+
+```jsx
+import * as types from '../action-types'
+import { AnyAction } from 'redux'
+
+export interface Counter1State {
+  number: number
+}
+
+let initialState: Counter1State = {
+  number: 0
+}
+
+export default function (state: Counter1State = initialState, action: AnyAction): Counter1State {
+  switch (action.type) {
+    case types.ADD1:
+      return { number: state.number +1 }
+    case types.ADD2:
+      return { number: state.number + 2 }
+    default: 
+      return state
+  }
+}
+```
+
+- 创建 `/src/store/reducers/counter2.tsx`
+
+```jsx
+import * as types from '../action-types'
+import { AnyAction } from 'redux'
+
+export interface Counter2State {
+  number: number
+}
+
+let initialState: Counter2State = {
+  number: 0
+}
+
+export default function (state: Counter2State = initialState, action: AnyAction): Counter2State {
+  switch (action.type) {
+    case types.ADD1:
+      return { number: state.number +1 }
+    case types.ADD2:
+      return { number: state.number + 2 }
+    default: 
+      return state
+  }
+}
+```
+
+- 创建 `/src/store/reducers/index.tsx`
+
+```jsx
+import { combineReducers, ReducersMapObject, Reducer, AnyAction } from 'redux';
+import counter1, { Counter1State } from './counter1';
+import counter2, { Counter2State } from './counter2';
+
+export interface CombinedState {
+  counter1: Counter1State
+  counter2: Counter2State
+}
+
+
+let reducers: ReducersMapObject<CombinedState, AnyAction> = {
+  counter1,
+  counter2
+}
+
+// export type CombineState = {
+//  [key in keyof typeof reducers]:  ReturnType<typeof reducers[key]>
+// }
+
+
+let reducer: Reducer<CombinedState, AnyAction>  = combineReducers(reducers)
+export default reducer
+```
+
+- 使用 redux
+- 新建 `/src/components/Counter1.tsx`
+
+```jsx
+import React from 'react'
+
+class Counter1 extends React.Component {
+
+  render () {
+    return <>Counter1</>
+  }
+}
+
+export default Counter1
+```
+
+- 新建 `/src/components/Counter2.tsx`
+
+```jsx
+import React from 'react'
+
+class Counter2 extends React.Component {
+  
+  render () {
+    return <>Counter2</>
+  }
+}
+
+export default Counter2
+```
+
+- 修改 `/src/index.tsx`
+
+```jsx
+import React from 'react';
+import ReactDom from 'react-dom'
+import Counter1 from './components/Counter1'
+import Counter2 from './components/Counter2'
+import { Provider } from 'react-redux'
+import store from './store'
+
+
+ReactDom.render(
+  <Provider store={store}>
+    <Counter1 />
+    <Counter2 />
+  </Provider>
+  , document.getElementById("root"))
+```
+
+- 启动项目验证
+
+```bash
+yarn dev
+
+// http://localhost:8080
+```
+
+可以看到 `Counter1Counter2` 正确显示
+
+接下来，开始连接 Redux
+
+- 修改 `/src/components/Counter1.tsx`
+
+```jsx
+import React from 'react'
+import { Dispatch } from 'redux'
+import { connect } from 'react-redux';
+import { CombinedState } from '../store/reducers/index';
+import { Counter1State } from '../store/reducers/counter1';
+import * as types from '../store/action-types';
+
+let mapStateToProps = (state: CombinedState): Counter1State => state.counter1 
+let mapDispatchToProps = (dispatch: Dispatch) => ({
+  add1(amount: number) {dispatch({type: types.ADD1, payload: amount })},
+  add2() {dispatch({type: types.ADD2})}
+})
+
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>
+
+class Counter1 extends React.Component<Props> {
+
+  render () {
+    return (
+      <div>
+        <p>{this.props.number}</p>
+        <button onClick={() => this.props.add1(5)}>+5</button>
+        <button onClick={() => this.props.add2()}>+2</button>
+      </div>
+    )
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter1)
+```
+
+- 修改 `/src/components/Counter2.tsx`
+
+```jsx
+import React from 'react'
+import { Dispatch } from 'redux'
+import { connect } from 'react-redux';
+import { CombinedState } from '../store/reducers/index';
+import { Counter2State } from '../store/reducers/counter2';
+import * as types from '../store/action-types';
+
+let mapStateToProps = (state: CombinedState): Counter2State => state.counter2
+let mapDispatchToProps = (dispatch: Dispatch) => ({
+  add3() {dispatch({type: types.ADD3 })},
+  add4() {dispatch({type: types.ADD4 })},
+  
+})
+
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>
+
+class Counter2 extends React.Component<Props> {
+
+  render () {
+    return (
+      <div>
+        <p>{this.props.number}</p>
+        <button onClick={() => this.props.add3()}>+1</button>
+        <button onClick={() => this.props.add4()}>+10</button>
+      </div>
+    )
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter2)
+```
+
+- 修改 `src/store/action-types.tsx`
+
+```jsx
+export const ADD1 = 'ADD1'
+export const ADD2 = 'ADD2'
+export const ADD3 = 'ADD3'
+export const ADD4 = 'ADD4'
+```
+
+- 修改 `src/store/reducers/counter1.tsx` 的 `types.ADD1， types.ADD2`
+
+```jsx
+import * as types from '../action-types'
+import { AnyAction } from 'redux'
+
+export interface Counter1State {
+  number: number
+}
+
+let initialState: Counter1State = {
+  number: 0
+}
+
+export default function (state: Counter1State = initialState, action: AnyAction): Counter1State {
+  switch (action.type) {
+    case types.ADD1:
+      // 每次点击新增传入的参数
+      return { number: state.number + (action.payload || 1) }
+    case types.ADD2:
+      return { number: state.number + 2 }
+    default: 
+      return state
+  }
+}
+```
+
+- 修改 `src/store/reducers/counter2.tsx`  的 `types.ADD3， types.ADD4`
+
+```jsx
+import * as types from '../action-types'
+import { AnyAction } from 'redux'
+
+export interface Counter2State {
+  number: number
+}
+
+let initialState: Counter2State = {
+  number: 0
+}
+
+export default function (state: Counter2State = initialState, action: AnyAction): Counter2State {
+  switch (action.type) {
+    case types.ADD3:
+      return { number: state.number + 1 }
+    case types.ADD4:
+      return { number: state.number + 10 }
+    default: 
+      return state
+  }
+}
+```
 

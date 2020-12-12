@@ -12,7 +12,7 @@ let initialState: Counter1State = {
 export default function (state: Counter1State = initialState, action: AnyAction): Counter1State {
   switch (action.type) {
     case types.ADD1:
-      return { number: state.number +1 }
+      return { number: state.number + (action.payload || 1) }
     case types.ADD2:
       return { number: state.number + 2 }
     default: 
