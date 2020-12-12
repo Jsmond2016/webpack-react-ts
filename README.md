@@ -737,3 +737,187 @@ export default function (state: Counter2State = initialState, action: AnyAction)
 }
 ```
 
+- 启动验证
+
+```bash
+yarn dev
+
+// http://localhost:8080/
+```
+
+
+
+
+
+## 10-支持路由
+
+- 安装路由相关依赖
+
+```bash
+cnpm i react-router-dom @types/react-router-dom connected-react-router antd -S
+```
+
+- 修改 `src/index.tsx`
+
+```jsx
+import React from "react";
+import ReactDom from "react-dom";
+import Counter1 from "./components/Counter1";
+import Counter2 from "./components/Counter2";
+import { Provider } from "react-redux";
+import store from "./store";
+import { Route, Link, Redirect, Switch } from "react-router-dom";
+import { ConnectedRouter } from "connected-react-router";
+import history from "./history";
+
+ReactDom.render(
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <ul>
+        <li>
+          <Link to="counter1">counter1</Link>
+        </li>
+        <li>
+          <Link to="counter2">counter2</Link>
+        </li>
+      </ul>
+      <Switch>
+        <Route path="/counter1" component={Counter1} />
+        <Route path="/counter2" component={Counter2} />
+        <Redirect to="counter1" />
+      </Switch>
+    </ConnectedRouter>
+  </Provider>,
+  document.getElementById("root")
+);
+
+```
+
+- 新增 `src/history.tsx` 文件
+
+```jsx
+import { createHashHistory } from 'history'
+
+const history = createHashHistory()
+
+export default history
+```
+
+- 修改 `/src/store/index.tsx` 文件
+
+```jsx
+import {
+  createStore,
+  applyMiddleware,
+  StoreEnhancer,
+  StoreEnhancerStoreCreator,
+  Store,
+} from "redux";
+import thunk from "redux-thunk";
+import reducer from "./reducers";
+import { routerMiddleware } from 'connected-react-router'
+import history from '../history';
+
+// 在中间件中使用 routerMiddleware(history)
+const storeEnhancer: StoreEnhancer = applyMiddleware(thunk, routerMiddleware(history));
+const storeEnhancerStoreCreator: StoreEnhancerStoreCreator = storeEnhancer(
+  createStore
+);
+const store: Store = storeEnhancerStoreCreator(reducer);
+
+export default store;
+
+```
+
+- 修改 `/src/store/reducers/index.tsx`
+
+```jsx
+import { combineReducers, ReducersMapObject, Reducer, AnyAction } from "redux";
+import counter1, { Counter1State } from "./counter1";
+import counter2, { Counter2State } from "./counter2";
+// 引入 下面的文件
+import { connectRouter, RouterState } from "connected-react-router";
+import history from "../../history";
+
+export interface CombinedState {
+  counter1: Counter1State;
+  counter2: Counter2State;
+   // 新增 router 在 store 的 state 中
+  router: RouterState;
+}
+
+// 这里因为 RouterState 的类型和 AnyAction 不一致没有交集，使用 any
+const reducers: ReducersMapObject<CombinedState, any> = {
+  counter1,
+  counter2,
+  router: connectRouter(history),
+};
+
+// export type CombineState = {
+//  [key in keyof typeof reducers]:  ReturnType<typeof reducers[key]>
+// }
+
+const reducer: Reducer<CombinedState, AnyAction> = combineReducers(reducers);
+export default reducer;
+
+```
+
+- 页面使用 `dispatch` 的方式跳转路由
+
+```jsx
+import React from 'react'
+import { Dispatch } from 'redux'
+import { connect } from 'react-redux';
+import { CombinedState } from '../store/reducers/index';
+import { Counter1State } from '../store/reducers/counter1';
+import * as types from '../store/action-types';
+// 引入依赖
+import { LocationDescriptorObject, LocationState } from 'history'
+import { push } from 'connected-react-router'
+
+const mapStateToProps = (state: CombinedState): Counter1State => state.counter1 
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  add1(amount: number) {dispatch({type: types.ADD1, payload: amount })},
+  add2() {dispatch({type: types.ADD2})},
+  // 新增 跳转路由方法 
+  goTo(location: LocationDescriptorObject<LocationState>) {
+    dispatch(push(location))
+  }
+})
+
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>
+
+class Counter1 extends React.Component<Props> {
+
+  render () {
+    return (
+      <div>
+        <p>{this.props.number}</p>
+        <button onClick={() => this.props.add1(5)}>+5</button>
+        <br/>
+        <button onClick={() => this.props.add2()}>+2</button>
+        <br/>
+         {/** 新增 跳转路由方法  */}
+        <button onClick={() => this.props.goTo({pathname: '/counter2'})}>跳转页面</button>
+      </div>
+    )
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter1)
+```
+
+参考资料：
+
+- [解析 connected-react-router](https://segmentfault.com/a/1190000023692081)
+- [使用connected-react-router绑定react-router到redux](https://zhuanlan.zhihu.com/p/93228510)
+
+ 
+
+
+
+参考学习资料：
+
+- [从零开始搭建React应用（一）——基础搭建](https://juejin.cn/post/6844903605070200846)
+- [从零开始搭建React应用（二）——React应用架构](https://juejin.cn/post/6844903639782260749)
+
