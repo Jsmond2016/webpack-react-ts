@@ -1,6 +1,6 @@
 # react+redux+typescript构建前端项目
 
-> 学习参考 [视频1](https://www.bilibili.com/video/BV1Wb41147QT?from=search&seid=15906508399145941210)
+> 学习参考 [视频1](https://www.bilibili.com/video/BV1C7411k7ZQ?from=search&seid=15906508399145941210)
 
 ## 1搭建开发环境
 
