@@ -5,8 +5,8 @@ import { CombinedState } from '../store/reducers/index';
 import { Counter2State } from '../store/reducers/counter2';
 import * as types from '../store/action-types';
 
-let mapStateToProps = (state: CombinedState): Counter2State => state.counter2
-let mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapStateToProps = (state: CombinedState): Counter2State => state.counter2
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   add3() {dispatch({type: types.ADD3 })},
   add4() {dispatch({type: types.ADD4 })},
   

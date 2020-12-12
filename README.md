@@ -22,7 +22,7 @@ npm init -y
 - 安装相关依赖
 
 ```bash
-cnpm i typescript webpack webpack-cli webpack-dev-server ts-loader cross-env webpack-merge clean-webpack-plugin html-webpack-plugin -D
+yarn add typescript webpack webpack-cli webpack-dev-server ts-loader cross-env webpack-merge clean-webpack-plugin html-webpack-plugin -D
 ```
 
 ## 2-生成ts配置文件
@@ -30,7 +30,7 @@ cnpm i typescript webpack webpack-cli webpack-dev-server ts-loader cross-env web
 此时，可以使用 tsc 命令，生成 tsconfig 文件
 
 ```
-cnpm i typescript -g
+yarn add typescript -g
 
 tsc --init
 ```
@@ -58,17 +58,17 @@ tsc --init
 - 安装依赖
 
 ```bash
-cnpm i typescript webpack webpack-cli webpack-dev-server ts-loader cross-env webpack-merge clean-webpack-plugin html-webpack-plugin -D
+yarn add typescript webpack webpack-cli webpack-dev-server ts-loader cross-env webpack-merge clean-webpack-plugin html-webpack-plugin -D
 
-cnpm i react @types/react react-dom @types/react-dom -S
+yarn add react @types/react react-dom @types/react-dom -D
 
-cnpm i redux react-redux @types/react-redux redux-logger redux-promise redux-thunk @types/redux-logger @types/redux-promise -D
+yarn add redux react-redux @types/react-redux redux-logger redux-promise redux-thunk @types/redux-logger @types/redux-promise -D
 
-cnpm i react-router-dom @types/react-router-dom connected-react-router antd -S
+yarn add react-router-dom @types/react-router-dom connected-react-router antd -D
 
-cnpm i eslint @typescript-eslit/eslint-plugin @typescript-eslit/parser -D
+yarn add eslint @typescript-eslit/eslint-plugin @typescript-eslit/parser -D
 
-cnpm i @types/jest ts-jest -D
+yarn add @types/jest ts-jest -D
 ```
 
 - 编写 `/config/webpack.base.config.js`
@@ -274,7 +274,7 @@ yarn build
 - 安装 jest 测试工具
 
 ```bash
-cnpm i @types/jest ts-jest -D
+yarn add @types/jest ts-jest -D
 ```
 
 - 新建 `jest.config.js` 配置
@@ -335,7 +335,7 @@ describe('测试calc', () => {
 - 安装 react
 
 ```bash
-cnpm i react @types/react react-dom @types/react-dom -S
+yarn add react @types/react react-dom @types/react-dom -S
 ```
 
 - 编写 `src/index.tsx`
@@ -379,7 +379,7 @@ yarn dev
 可以看到预览效果
 
 - 其他 ts 相关：
-  - `Element` 是指原生 `DOM` 对象元素，可不是 `React` 里的东西，而是 `DOM` 里面的类型
+  - `Element` 是指原生 `DOM` 对象元素，不是 `React` 里的东西，而是 `DOM` 里面的类型
 
 ```tsx
 // React.tsx
@@ -390,6 +390,8 @@ element: DetailedReactHTMLElement<P, T>,
  props?: P,
  ...children: ReactNode[]): DetailedReactHTMLElement<P, T>;
 ```
+
+- 关系图如下：
 
 ![继承关系](http://img.zhufengpeixun.cn/elementss.png)
 
@@ -426,10 +428,6 @@ class Hello extends React.Component<Props, State> {
   }
 }
 
-
-
-
-
 ReactDom.render(<Index {...props} />, document.getElementById("root"))
 ```
 
@@ -440,7 +438,7 @@ ReactDom.render(<Index {...props} />, document.getElementById("root"))
 - 安装依赖：
 
 ```bash
-cnpm i redux react-redux @types/react-redux redux-logger redux-promise redux-thunk @types/redux-logger @types/redux-promise -D
+yarn add redux react-redux @types/react-redux redux-logger redux-promise redux-thunk @types/redux-logger @types/redux-promise -D
 ```
 
 - 创建文件 `/src/store/index.tsx`
@@ -453,7 +451,6 @@ import reducer from './reducers'
 let storeEnhancer: StoreEnhancer = applyMiddleware(thunk)
 let storeEnhancerStoreCreator: StoreEnhancerStoreCreator = storeEnhancer(createStore)
 let store: Store = storeEnhancerStoreCreator(reducer)
-
 
 export default store
 ```
@@ -482,7 +479,7 @@ let initialState: Counter1State = {
 export default function (state: Counter1State = initialState, action: AnyAction): Counter1State {
   switch (action.type) {
     case types.ADD1:
-      return { number: state.number +1 }
+      return { number: state.number + 1 }
     case types.ADD2:
       return { number: state.number + 2 }
     default: 
@@ -508,7 +505,7 @@ let initialState: Counter2State = {
 export default function (state: Counter2State = initialState, action: AnyAction): Counter2State {
   switch (action.type) {
     case types.ADD1:
-      return { number: state.number +1 }
+      return { number: state.number + 1 }
     case types.ADD2:
       return { number: state.number + 2 }
     default: 
@@ -747,14 +744,12 @@ yarn dev
 
 
 
-
-
 ## 10-支持路由
 
 - 安装路由相关依赖
 
 ```bash
-cnpm i react-router-dom @types/react-router-dom connected-react-router antd -S
+yarn add react-router-dom @types/react-router-dom connected-react-router antd -D
 ```
 
 - 修改 `src/index.tsx`
@@ -912,7 +907,694 @@ export default connect(mapStateToProps, mapDispatchToProps)(Counter1)
 - [解析 connected-react-router](https://segmentfault.com/a/1190000023692081)
 - [使用connected-react-router绑定react-router到redux](https://zhuanlan.zhihu.com/p/93228510)
 
+ ## 11-使用AntDesign
+
+- 安装依赖：
+
+```jsx
+yarn add antd @types/antd -D
+
+yarn add style-loader css-loader @types/react-router-dom -D
+
+yarn add axios -D
+```
+
+- 修改 `src/index.tsx`
+
+```jsx
+import React from "react";
+import ReactDom from "react-dom";
+import Counter1 from "./components/Counter1";
+import Counter2 from "./components/Counter2";
+import { Provider } from "react-redux";
+import store from "./store";
+import { Route, Link, Redirect, Switch } from "react-router-dom";
+import { ConnectedRouter } from "connected-react-router";
+import history from "./history";
+import "antd/dist/antd.css";
+// 使用 antd
+import { Layout } from "antd";
+import NavBar from "./components/NavBar";
+import User from "./components/User";
+const { Content } = Layout;
+
+ReactDom.render(
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <Layout>
+        <NavBar />
+        <Content style={{ padding: "20px" }}>
+          <Switch>
+            <Route path="/counter1" component={Counter1} />
+            <Route path="/counter2" component={Counter2} />
+            <Route path="/user" component={User} />
+            <Redirect to="counter1" />
+          </Switch>
+        </Content>
+      </Layout>
+    </ConnectedRouter>
+  </Provider>,
+  document.getElementById("root")
+);
+
+```
+
+- 新增 `src/components/NavBar.tsx`
+
+```jsx
+import React from 'react';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
+import { Layout, Menu } from 'antd'
+
+type Props = RouteComponentProps
+
+
+class NavBar extends React.Component<Props> {
+  render() {
+    return (
+      <Layout.Header>
+        <Menu
+          theme="dark"
+          style={{lineHeight: '64px'}}
+          mode="horizontal"
+          selectedKeys={[this.props.location.pathname]}
+        >
+          <Menu.Item>
+            <Link to="/counter1">counter1</Link>
+          </Menu.Item>
+          <Menu.Item>
+            <Link to="/counter2">counter2</Link>
+          </Menu.Item>
+          <Menu.Item>
+            <Link to="/user">user</Link>
+          </Menu.Item>
+        </Menu>
+      </Layout.Header>
+    )
+  }
+}
+
+export default withRouter(NavBar)
+```
+
+- 以下文件因为是 逐步增加的 需求代码，这里只放最后的代码
+- 新增 `src/components/User.tsx` 用户模块
+
+```jsx
+import React from "react";
+import { Link, RouteComponentProps, withRouter, Route } from "react-router-dom";
+import { Layout, Menu } from "antd";
+import UserAdd from './UserAdd'
+import UserList from './UserList'
+import UserDetail from './UserDetail'
+
+type Props = RouteComponentProps;
+
+const { Sider, Content } = Layout;
+
+class User extends React.Component<Props> {
+  render() {
+    return (
+      <Layout>
+        <Sider>
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[this.props.location.pathname]}
+          >
+            <Menu.Item>
+              <Link to="/user/add">添加用户</Link>
+            </Menu.Item>
+            <Menu.Item>
+              <Link to="/user/list">用户列表</Link>
+            </Menu.Item>
+          </Menu>
+        </Sider>
+        <Content style={{padding: '20px'}}>
+          <Route path="/user/add" component={UserAdd} />
+          <Route path="/user/list" component={UserList} />
+          <Route path="/user/detail/:id" component={UserDetail} />
+        </Content>
+      </Layout>
+    );
+  }
+}
+
+export default withRouter(User);
+```
+
+
+
+- 新增 `src/components/UserAdd.tsx` 新增用户模块
+
+```tsx
+import React, { useState, useEffect } from 'react'
+import { message, Form, Button, Layout, Input, Menu } from 'antd'
+import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
+import { User, UserAddResponse } from '../typings/api'
+import http, { AxiosResponse } from '../api/request'
+
+type Props = RouteComponentProps
+
+const UserAdd = (props: Props) => {
+  const [user, setUser] = useState<User>({} as User)
+  
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    http.post<UserAddResponse>('/user', user).then((res: AxiosResponse) => {
+       const { data, code } = res.data
+       if (code === 0) {
+         props.history.push('/user/list')
+       }else {
+         message.error('添加失败')
+       }
+    })
+  }
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUser({
+      ...user,
+      name: event.target.value
+    })
+  }
+
+  return (
+    <Form>
+      <Form.Item>
+        <Input
+          placeholder="用户名"
+          style={{width: 120}}
+          value={user.name}
+          onChange={handleNameChange}
+        />
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit" onClick={handleSubmit}>添加</Button>
+      </Form.Item>
+    </Form>
+  )
+}
+
+export default UserAdd
+```
+
+
+
+- 新增 `src/components/UserList.tsx` 用户列表模块
+
+```tsx
+import React, { useState, useEffect } from 'react'
+import { message, Table } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
+import { Link } from 'react-router-dom'
+import { User, UserListResponse } from '../typings/api'
+import httpInstance, { AxiosResponse } from '../api/request'
+
+const columns: ColumnProps<User>[] = [
+  {
+    title: '用户名',
+    dataIndex: 'name',
+    key: 'name'
+  },
+  {
+    title: '跳转详情页',
+    dataIndex: 'jump',
+    key: 'jump',
+    render: (val, record) => (<Link to={`/user/detail/${record._id}`} >跳转</Link>)
+  }
+]
+
+const UserList = () => {
+  const [users, setUsers] = useState<User[]>([])
+  
+  useEffect(() => {
+    (async function () {
+     const res: AxiosResponse<UserListResponse> =  await httpInstance.get<UserListResponse, AxiosResponse<UserListResponse>>('/users')
+     const { data, code } = res.data
+     if (code === 0) {
+       setUsers(data)
+     } else {
+       message.error('获取用户列表失败')
+     }
+    })()
+  }, [])
+
+
+  return (
+    <Table columns={columns} dataSource={users} rowKey={row => row._id} />
+  )
+}
+
+export default UserList
+```
+
+
+
+- 新建 `src/typings/api.ts` 定义接口类型
+
+```typescript
+/*
+ * @Description: 
+ * @Date: 2020-12-12 12:11:11
+ * @Author: Jsmond2016 <jsmond2016@gmail.com>
+ * @Copyright: Copyright (c) 2020, Jsmond2016
+ */
+
+ export interface User {
+   _id: string
+   name: string
+ }
+
+ export interface UserListResponse {
+   code: number
+   data: User[]
+ }
+
+
+ export interface UserAddResponse {
+   code: number
+   data: User
+ }
+```
+
+
+
+- 新建 `src/api/request.ts` 定义请求方法
+
+```typescript
+/*
+ * @Description: 
+ * @Date: 2020-12-12 13:51:31
+ * @Author: Jsmond2016 <jsmond2016@gmail.com>
+ * @Copyright: Copyright (c) 2020, Jsmond2016
+ */
+
+ import axios from 'axios'
+
+ const httpInstance = axios.create({
+   timeout: 2000,
+   baseURL: '/api/'
+ })
+
+ export * from 'axios'
+ export default httpInstance
+```
+
+
+
+- 修改 `src/components/UserList.tsx`  文件编写请求
+
+
+
+
+
+## 12-后台接口
+
+- 初始化项目
+
+```bash
+mkdir server
+cd server
+cnpm init -y
+cnpm i @types/node express @types/express body-parser cors @types/cors mongoose @types/mongoogse shelljs -S
+```
+
+- `tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+    "target": "es5", 
+    "module": "commonjs", 
+    "lib": [
+      "ES2015",
+       "DOM"
+    ],
+    "outDir": "./dist",
+    "strict": true, 
+     "baseUrl": "./",
+     "paths": {
+       "*",
+       "node_modules/*",
+       "typings/*"
+     },
+    "esModuleInterop": true,
+  }
+}
+```
+
+- `servet.ts`
+
+```typescript
+/*
+ * @Description: 
+ * @Date: 2020-12-12 14:11:23
+ * @Author: Jsmond2016 <jsmond2016@gmail.com>
+ * @Copyright: Copyright (c) 2020, Jsmond2016
+ */
+
+ import express, {Express, Request, Response } from 'express'
+ import bodyParser from 'body-parser'
+ import cors from 'cors'
+ import Models from './db'
+ import config from './config'
+ import path from 'path'
+
+ const app: Express = express()
+
+ app.use(cors({
+   origin: config.origin,
+   credentials: true,
+   allowedHeaders: "Content-Type, Authorization",
+   methods: "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS"
+ }))
+ app.use(express.static(path.resolve(__dirname, 'public')))
+ app.use(bodyParser.urlencoded({extended: false }))
+ app.use(bodyParser.json())
+
+ app.get('/api/users', async (req: Request, res: Response) => {
+   const user = await Models.UserModel.find()
+   res.json({
+     code: 0,
+     data: user
+   })
+ })
+
+ app.post('/api/user', async (req: Request, res: Response) => {
+   let user = req.body
+   user = await Models.UserModel.create(user)
+   res.json({
+     code: 0,
+     data: user
+   })
+ })
+
+ app.listen(4000, () => {
+   console.log('服务器在 http://localhost:4000 端口启动')
+ })
+```
+
+- 编写 `src/db.ts`
+
+```typescript
+/*
+ * @Description: 
+ * @Date: 2020-12-12 14:46:27
+ * @Author: Jsmond2016 <jsmond2016@gmail.com>
+ * @Copyright: Copyright (c) 2020, Jsmond2016
+ */
+
+ import mongoose, { Schema, Connection, Model} from 'mongoose'
+ import config from './config';
  
+
+ const conn: Connection = mongoose.createConnection(config.dbUrl, {
+   useNewUrlParser: true,
+   useUnifiedTopology: true
+ })
+ const UserModel = conn.model("User", new Schema({
+   usename: {
+     type: String
+   }
+ }))
+
+ export default { UserModel }
+```
+
+- 编写 `src/config.ts`
+
+```typescript
+/*
+ * @Description: 
+ * @Date: 2020-12-12 14:20:51
+ * @Author: Jsmond2016 <jsmond2016@gmail.com>
+ * @Copyright: Copyright (c) 2020, Jsmond2016
+ */
+
+ interface IConfig {
+   secret: string
+   dbUrl: string
+   origin: string []
+ }
+
+ const config: IConfig = {
+   secret: 'webpack-react-ts-test',
+   dbUrl: 'mongodb://localhost:27017/webpack-ts',
+   origin: ['http://localhost:8080']
+ }
+
+ export default config
+```
+
+- 编写 `src/copy.ts`
+
+```typescript
+/*
+ * @Description: 
+ * @Date: 2020-12-12 14:58:55
+ * @Author: Jsmond2016 <jsmond2016@gmail.com>
+ * @Copyright: Copyright (c) 2020, Jsmond2016
+ */
+
+ import shelljs  from 'shelljs'
+
+ shelljs.cp("-R", "./public/", "./dist/")
+```
+
+- 编写 `src/typings/shelljs/index.d.ts`
+
+```typescript
+/*
+ * @Description: 
+ * @Date: 2020-12-12 14:58:27
+ * @Author: Jsmond2016 <jsmond2016@gmail.com>
+ * @Copyright: Copyright (c) 2020, Jsmond2016
+ */
+
+ declare module 'shelljs'
+```
+
+- 修改 `package.json` 文件
+
+```json
+{
+  "name": "server-webpack-react-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node ./src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/mongoose": "^5.10.2",
+    "mongoose": "^5.11.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.8",
+    "@types/express": "^4.17.9",
+    "@types/node": "^14.14.12",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "shelljs": "^0.8.4"
+  }
+}
+
+```
+
+- 打开 `Robo 3T` 数据库预览工具，开启连接
+- 创建数据库 `webpack-ts`
+- 创建表 `users`
+- 新增 `log`
+
+```typescript
+// src/server.ts
+app.get('/api/users', async (req: Request, res: Response) => {
+   const user = await Models.UserModel.find()
+   console.log('GET /api/users: ', user)
+   res.json({
+     code: 0,
+     data: user
+   })
+ })
+
+ app.post('/api/user', async (req: Request, res: Response) => {
+   let user = req.body
+   console.log('POST /api/user: ', JSON.stringify(user))
+   user = await Models.UserModel.create(user)
+   res.json({
+     code: 0,
+     data: user
+   })
+ })
+```
+
+- 使用 postman 测试接口，查看 log 信息
+
+```js
+get localhost:4000/api/users
+
+post localhost:4000/api/user
+```
+
+- 修改 前端 请求配置
+
+```typescript
+// src/api/request.ts 
+import axios from 'axios'
+
+ const httpInstance = axios.create({
+   timeout: 2000,
+   // 如果你这里的代码和我的不一致，参考修改
+   baseURL: '/api/'
+ })
+
+ export * from 'axios'
+ export default httpInstance
+
+// 其他文件所有请求都只请求后面部分,如 '/users'
+//const res: AxiosResponse<UserListResponse> =  await httpInstance.get<UserListResponse, AxiosResponse<UserListResponse>>('/users')
+
+```
+
+- 前端设置代理 `webpack.base.config.js`
+
+```js
+devServer: {
+    contentBase: '../dist',
+    proxy: [　　
+      // webpack 关于跨域的配置，参考资料 https://www.cnblogs.com/zwhbk/p/13364931.html　　　　
+  　　// 例如将'localhost: 8080/api/xxx'代理到'http:www.baidu.com/api/xxx
+      {
+          context: ['/api'],
+          target: 'http://localhost:4000/', //接口域名
+          changeOrigin: true, //如果是https需要配置该参数
+          secure: false, //如果接口跨域需要进行该配置
+      },
+    ]
+  },
+```
+
+- 前端项目启动，测试数据是否成功
+
+```bash
+yarn dev
+
+// localhost:8080
+```
+
+
+
+## 13-Mock 数据
+
+参考资料：
+
+- [在webpack-dev-server内添加mock server](https://blog.csdn.net/weixin_33815613/article/details/88027401)
+- [vue项目mock数据方案之一：webpack的devServer.before](https://www.jianshu.com/p/c4883c04acb3)
+
+## 14-webpack-tsconfig 配置优化
+
+- [React Typescript音乐播放器项目笔记：2、alias与tsconfig的配置](https://blog.csdn.net/weixin_38405133/article/details/87188898)
+- [Typescript + alias 2019 配置](https://zhuanlan.zhihu.com/p/123097934)
+
+## 15-拓展知识：异步 Dispatch
+
+因为 Redux 自带的 Dispatch 没有异步 Dispatch ，因此需要自己定义
+
+- 看代码：
+
+```tsx
+import { Middleware, Action, AnyAction } from 'redux';
+type MiddlewareExt = Middleware & {
+    withExtraArgument: typeof createThunkMiddleware
+}
+export type ThunkAction<R, S, E, A extends Action> = (
+    dispatch: ThunkDispatch<S, E, A>,
+    getState: () => S,
+    extraArgument: E
+) => R;
+// 特点：异步 dispatch 可以接受一个 异步函数
+export interface ThunkDispatch<S, E, A extends Action> {
+    <T extends A>(action: T): T;
+    <R>(asyncAction: ThunkAction<R, S, E, A>): R;
+}
+function createThunkMiddleware<S = Record<string, unknown>, A extends Action = AnyAction, E = undefined>(extraArgument?: any): Middleware {
+    const middleware: Middleware<ThunkDispatch<S, E, A>, S, ThunkDispatch<S, E, A>> = ({ dispatch, getState }) => next => action => {
+        if (typeof action === 'function') {
+            return action(dispatch, getState, extraArgument);
+        }
+
+        return next(action);
+    };
+    return middleware;
+}
+
+const thunk: MiddlewareExt = createThunkMiddleware() as MiddlewareExt;
+thunk.withExtraArgument = createThunkMiddleware;
+
+export default thunk;
+
+```
+
+- 使用
+
+```tsx
+import React from 'react'
+import { Dispatch, AnyAction } from 'redux';
+import { connect } from 'react-redux';
+import { CombinedState } from '../store/reducers/index';
+import { Counter1State } from '../store/reducers/counter1';
+import * as types from '../store/action-types';
+import { LocationDescriptorObject, LocationState } from 'history'
+import { push } from 'connected-react-router'
+// 异步 dispatch 
+import { ThunkDispatch } from '../redux-thunk';
+
+
+const mapStateToProps = (state: CombinedState): Counter1State => state.counter1 
+// 异步 dispatch - ThunkDispatch<CombinedState, Record<string, unknown>, AnyAction>
+const mapDispatchToProps = (dispatch: ThunkDispatch<CombinedState, Record<string, unknown>, AnyAction>) => ({
+  add1(amount: number) {dispatch({type: types.ADD1, payload: amount })},
+  add2() {dispatch({type: types.ADD2})},
+  goTo(location: LocationDescriptorObject<LocationState>) {
+    dispatch(push(location))
+  },
+   // 异步 dispatch
+  asnycAdd(amount: number) {
+    dispatch((dispatch: ThunkDispatch<CombinedState, Record<string, unknown>, AnyAction>, getState: any) => {
+      setTimeout(() => {
+        dispatch({type: types.ADD1, payload: amount})
+      }, 1000)
+    })
+  }
+})
+
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>
+
+class Counter1 extends React.Component<Props> {
+
+  render () {
+    return (
+      <div>
+        <p>{this.props.number}</p>
+        <button onClick={() => this.props.add1(5)}>+5</button>
+        <br/>
+        <button onClick={() => this.props.add2()}>+2</button>
+        <br/>
+        <button onClick={() => this.props.goTo({pathname: '/counter2'})}>跳转页面</button>
+        <br/>
+        <button onClick={() => this.props.asnycAdd(5)}>异步thunk</button>
+      </div>
+    )
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter1)
+```
 
 
 
