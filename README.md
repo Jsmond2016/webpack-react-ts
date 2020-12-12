@@ -1,11 +1,6 @@
 # react+redux+typescript构建前端项目
 
-视频参考：https://www.bilibili.com/video/BV1Wb41147QT?from=search&seid=15906508399145941210
-视频参考2：https://www.bilibili.com/video/BV1C7411k7ZQ?from=search&seid=15906508399145941210
-
-资料参考1：https://github.com/CCZX/React-TypeScript-from0to1
-
-资料参考2：https://github.com/CCZX/wechat
+> 学习参考 [视频1](https://www.bilibili.com/video/BV1Wb41147QT?from=search&seid=15906508399145941210)
 
 ## 1搭建开发环境
 
@@ -40,8 +35,8 @@ tsc --init
 ```json
 {
   "compilerOptions": {
-    "target": "es5", // 编译后的版本
-    "module": "commonjs", // 编译后模块的写法
+    "target": "es5", /** 编译后的版本 */
+    "module": "commonjs", /** 编译后模块的写法 */
     "jsx": "react",
     "strict": true,
     "esModuleInterop": true,
@@ -252,11 +247,11 @@ yarn build
         "@typescript-eslint/eslint-plugin"
     ],
     "extends": [
-        // 使用推荐配置
+        /** 使用推荐配置 */
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
-        // 配置规则
+        /** 配置规则 */
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/no-var-requires": "off"
     }
@@ -321,7 +316,7 @@ describe('测试calc', () => {
 
 ```json
 "scripts": {
-    // ...
+    /** ... */
     "test": "jest"
   },
 ```
@@ -358,11 +353,11 @@ ReactDom.render(<Index />, document.getElementById("root"))
 ```json
 {
   "compilerOptions": {
-      // ... 新加这个
+      /** ... 新加这个 */
     "jsx": "preserve", /** 'preserve' | 'react-native' | 'react' */
-     //  'preserve' 表示保留 jsx 语法 和 tsx 后缀
-     //  'react-native' 表示 保留 jsx 语法但会把后缀改为 js
-     //  'react' 表示不保留 jsx 语法，直接编译成 es5
+     /** 'preserve' 表示保留 jsx 语法 和 tsx 后缀  */
+     /** 'react-native' 表示 保留 jsx 语法但会把后缀改为 js  */
+     /**  'react' 表示不保留 jsx 语法，直接编译成 es5  */
   }
 }
 
@@ -1200,15 +1195,155 @@ export default UserList
  export default httpInstance
 ```
 
+- 连接 store
+- 修改 `src/store/action-types.tsx`
+
+```tsx
+export const ADD1 = 'ADD1'
+export const ADD2 = 'ADD2'
+export const ADD3 = 'ADD3'
+export const ADD4 = 'ADD4'
 
 
-- 修改 `src/components/UserList.tsx`  文件编写请求
+export const SET_USER_LIST = 'SET_USER_LIST'
+```
+
+- 新建 `src/store/reducers/user.tsx`
+
+```tsx
+import * as types from "../action-types";
+import { AnyAction } from "redux";
+import { User } from '../../typings/api'
 
 
+export interface UserState {
+  list: User[]
+}
+
+const initialState: UserState = {
+  list: [],
+};
+
+export default function (
+  state: UserState = initialState,
+  action: AnyAction
+): UserState {
+  switch (action.type) {
+    case types.SET_USER_LIST:
+      return { list: action.payload };
+    default:
+      return state;
+  }
+}
+
+```
+
+- 修改 `src/store/reducers/index.tsx`
+
+```tsx
+import { combineReducers, ReducersMapObject, Reducer, AnyAction } from "redux";
+import counter1, { Counter1State } from "./counter1";
+import counter2, { Counter2State } from "./counter2";
+// 新增 user
+import user, { UserState } from './user'
+import { connectRouter, RouterState } from "connected-react-router";
+import history from "../../history";
+export interface CombinedState {
+  counter1: Counter1State;
+  counter2: Counter2State;
+  // 新增 user
+  user: UserState;
+  router: RouterState;
+}
+
+const reducers: ReducersMapObject<CombinedState, any> = {
+  counter1,
+  counter2,
+  // 新增 user
+  user,
+  router: connectRouter(history),
+};
+
+// export type CombineState = {
+//  [key in keyof typeof reducers]:  ReturnType<typeof reducers[key]>
+// }
+
+const reducer: Reducer<CombinedState, AnyAction> = combineReducers(reducers);
+export default reducer;
+
+```
+
+- 修改 `src/components/UserList.tsx`
+
+```tsx
+import React, { useState, useEffect } from 'react'
+import { message, Table } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
+import { Link } from 'react-router-dom'
+import { User, UserListResponse } from '../typings/api'
+import httpInstance, { AxiosResponse } from '../api/request'
+import { Dispatch } from 'redux'
+import { connect } from 'react-redux'
+import { CombinedState } from '../store/reducers/index';
+import { UserState } from '../store/reducers/user';
+import * as types from '../store/action-types';
+
+
+const mapStateToProps = (state: CombinedState): UserState => state.user
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  setUserList(list: User[]) {
+    dispatch({ type: types.SET_USER_LIST, payload: list })
+  }
+})
+
+const columns: ColumnProps<User>[] = [
+  {
+    title: '用户名',
+    dataIndex: 'name',
+    key: 'name'
+  },
+  {
+    title: '跳转详情页',
+    dataIndex: 'jump',
+    key: 'jump',
+    render: (val, record) => (<Link to={`/user/detail/${record._id}`} >跳转</Link>)
+  }
+]
+
+
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>
+
+const UserList = (props: Props ) => {
+
+  // const [users, setUsers] = useState<User[]>([])
+  const users = props.list
+  useEffect(() => {
+    (async function () {
+      const res: AxiosResponse<UserListResponse> =  await httpInstance.get<UserListResponse, AxiosResponse<UserListResponse>>('/users')
+      const { data, code } = res.data
+      if (code === 0) {
+        // setUsers(data)
+        props.setUserList(data)
+      } else {
+        message.error('获取用户列表失败')
+      }
+     })()
+  }, [])
+
+
+  return (
+    <Table columns={columns} dataSource={users} rowKey={row => row._id} />
+  )
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserList)
+```
 
 
 
 ## 12-后台接口
+
+- 后台仓库地址：[Jsmond2016/server-webpack-react-ts](https://github.com/Jsmond2016/server-webpack-react-ts)
 
 - 初始化项目
 
@@ -1234,9 +1369,11 @@ cnpm i @types/node express @types/express body-parser cors @types/cors mongoose 
     "strict": true, 
      "baseUrl": "./",
      "paths": {
-       "*",
-       "node_modules/*",
-       "typings/*"
+       "paths": {
+         "*": [
+         "node_modules/*",
+         "typings/*"
+       ]
      },
     "esModuleInterop": true,
   }
@@ -1409,7 +1546,7 @@ cnpm i @types/node express @types/express body-parser cors @types/cors mongoose 
 - 打开 `Robo 3T` 数据库预览工具，开启连接
 - 创建数据库 `webpack-ts`
 - 创建表 `users`
-- 新增 `log`
+- 新增 `log` 进行测试
 
 ```typescript
 // src/server.ts
@@ -1489,19 +1626,7 @@ yarn dev
 
 
 
-## 13-Mock 数据
-
-参考资料：
-
-- [在webpack-dev-server内添加mock server](https://blog.csdn.net/weixin_33815613/article/details/88027401)
-- [vue项目mock数据方案之一：webpack的devServer.before](https://www.jianshu.com/p/c4883c04acb3)
-
-## 14-webpack-tsconfig 配置优化
-
-- [React Typescript音乐播放器项目笔记：2、alias与tsconfig的配置](https://blog.csdn.net/weixin_38405133/article/details/87188898)
-- [Typescript + alias 2019 配置](https://zhuanlan.zhihu.com/p/123097934)
-
-## 15-拓展知识：异步 Dispatch
+## 13-拓展知识：异步 Dispatch
 
 因为 Redux 自带的 Dispatch 没有异步 Dispatch ，因此需要自己定义
 
@@ -1598,8 +1723,24 @@ export default connect(mapStateToProps, mapDispatchToProps)(Counter1)
 
 
 
+## 14-Mock 数据
+
+参考资料：
+
+- [在webpack-dev-server内添加mock server](https://blog.csdn.net/weixin_33815613/article/details/88027401)
+- [vue项目mock数据方案之一：webpack的devServer.before](https://www.jianshu.com/p/c4883c04acb3)
+
+## 15-webpack-tsconfig 配置优化
+
+- [React Typescript音乐播放器项目笔记：2、alias与tsconfig的配置](https://blog.csdn.net/weixin_38405133/article/details/87188898)
+- [Typescript + alias 2019 配置](https://zhuanlan.zhihu.com/p/123097934)
+
 参考学习资料：
 
+- 视频参考：https://www.bilibili.com/video/BV1Wb41147QT?from=search&seid=15906508399145941210
+- 视频参考2：https://www.bilibili.com/video/BV1C7411k7ZQ?from=search&seid=15906508399145941210
+- 资料参考1：https://github.com/CCZX/React-TypeScript-from0to1
+- 资料参考2：https://github.com/CCZX/wechat
 - [从零开始搭建React应用（一）——基础搭建](https://juejin.cn/post/6844903605070200846)
 - [从零开始搭建React应用（二）——React应用架构](https://juejin.cn/post/6844903639782260749)
 
