@@ -1737,10 +1737,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(Counter1)
 
 参考学习资料：
 
-- 视频参考：https://www.bilibili.com/video/BV1Wb41147QT?from=search&seid=15906508399145941210
-- 视频参考2：https://www.bilibili.com/video/BV1C7411k7ZQ?from=search&seid=15906508399145941210
-- 资料参考1：https://github.com/CCZX/React-TypeScript-from0to1
-- 资料参考2：https://github.com/CCZX/wechat
+- [视频参考](https://www.bilibili.com/video/BV1Wb41147QT?from=search&seid=15906508399145941210)
+- [视频参考2](https://www.bilibili.com/video/BV1C7411k7ZQ?from=search&seid=15906508399145941210)
+- [资料参考1](https://github.com/CCZX/React-TypeScript-from0to1)
+- [资料参考2](https://github.com/CCZX/wechat)
 - [从零开始搭建React应用（一）——基础搭建](https://juejin.cn/post/6844903605070200846)
 - [从零开始搭建React应用（二）——React应用架构](https://juejin.cn/post/6844903639782260749)
 
