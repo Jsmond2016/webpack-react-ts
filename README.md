@@ -46,7 +46,10 @@ tsc --init
 
 ```
 
+配置文件含义参考：
 
+- [tsconfig.json配置详解](https://segmentfault.com/a/1190000021749847)
+- [详解TypeScript项目中的tsconfig.json配置](https://www.jianshu.com/p/0383bbd61a6b)
 
 ## 3-配置 webpack
 
@@ -119,7 +122,7 @@ module.exports = {
 
 
 
-- 编写 `webpack.config.dev.js`
+- 编写 `webpack.dev.config.js`
 
 ```js
 const { smart } = require('webpack-merge')
@@ -133,7 +136,7 @@ module.exports = smart(base, {
 
 
 
-- 编写 `webpack.config.prod.js`
+- 编写 `webpack.prod.config.js`
 
 ```js
 const { smart } = require('webpack-merge')
@@ -330,7 +333,7 @@ describe('测试calc', () => {
 - 安装 react
 
 ```bash
-yarn add react @types/react react-dom @types/react-dom -S
+yarn add react @types/react react-dom @types/react-dom -D
 ```
 
 - 编写 `src/index.tsx`
